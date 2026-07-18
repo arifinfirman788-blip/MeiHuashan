@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>梅花山景区门票</title>
+  <style>
+    :root{--mist:#f2f6f2;--snow:#fff;--pine:#173e3a;--pine-soft:#dcebe3;--plum:#c4576d;--plum-soft:#f6e2e6;--gold:#cba15a;--ink:#1f2e2b;--muted:#687773;--line:#dce8e1;--font-sans:"PingFang SC","苹方-简","PingFang TC","苹方-繁",-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;--font-number:"D-DIN","DIN Alternate","DIN Condensed","Avenir Next Condensed","Helvetica Neue",sans-serif}
+    *{box-sizing:border-box}html{background:#cfdad4;scroll-behavior:smooth}body{margin:0;color:var(--ink);background:#cfdad4;font-family:var(--font-sans);font-synthesis:none;-webkit-font-smoothing:antialiased}button{font:inherit;cursor:pointer}button:focus-visible{outline:3px solid rgba(196,87,109,.28);outline-offset:3px}.page{width:min(100%,460px);min-height:100dvh;margin:0 auto;padding:8px 8px 118px;overflow:hidden;background:#fff;box-shadow:0 16px 42px rgba(23,62,58,.13)}
+    .hero{position:relative;height:350px;overflow:hidden;border-radius:28px 28px 34px 34px;background:#3b6a5e}.hero:before{position:absolute;inset:0;content:"";background:url("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=82") center/cover no-repeat}.hero:after{position:absolute;inset:0;content:"";background:linear-gradient(180deg,rgba(23,62,58,.22),rgba(23,62,58,.04) 48%,rgba(23,62,58,.74))}.hero-actions{position:absolute;z-index:2;top:16px;right:22px;left:22px;display:flex;justify-content:space-between;padding-top:env(safe-area-inset-top)}.hero-actions button{display:grid;place-items:center;width:54px;height:54px;border:1px solid rgba(255,255,255,.32);border-radius:50%;color:#fff;background:rgba(23,62,58,.28);backdrop-filter:blur(14px);font-size:27px}.hero-content{position:absolute;z-index:2;right:24px;bottom:28px;left:24px;color:#fff}.hero-content p{margin:0 0 8px;color:rgba(255,255,255,.84);font-size:13px}.hero-content h1{margin:0;font-size:30px;font-weight:500;line-height:1.2;letter-spacing:-.04em}.hero-content span{display:block;margin-top:9px;color:rgba(255,255,255,.7);font-size:12px;line-height:1.55}
+    .tabs{display:flex;position:sticky;z-index:4;top:0;height:52px;margin:20px 8px 0;border-radius:28px;background:#f4f5f4}.tab{position:relative;flex:1;margin:4px;border:1px solid transparent;border-radius:24px;color:var(--muted);background:transparent;font-size:14px}.tab.active{border-color:var(--ink);color:var(--ink);background:#fff;font-weight:600}.panel{display:none;padding:22px 16px 12px}.panel.active{display:block}.heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.heading h2{margin:0;font-size:22px;font-weight:500;line-height:1.3;letter-spacing:-.03em}.heading span{color:var(--muted);font-size:11px}.sub-heading{margin-top:26px}.sub-heading h2{font-size:18px}.copy,.note{margin:0;color:var(--muted);font-size:14px;line-height:1.72}.highlights{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.highlight{min-height:102px;padding:13px 11px;border:1px solid var(--line);border-radius:12px;background:#fff}.highlight strong,.highlight span{display:block}.highlight strong{margin-bottom:8px;font-size:13px}.highlight span{color:var(--muted);font-size:11px;line-height:1.5}.ticket-list{display:grid;gap:10px}.ticket-option{display:flex;align-items:center;justify-content:space-between;min-height:72px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;color:var(--muted);background:#fff;text-align:left}.ticket-option strong,.ticket-option small{display:block}.ticket-option strong{color:var(--ink);font-size:15px;font-weight:600}.ticket-option small{margin-top:4px;font-size:11px}.ticket-option b{color:var(--plum);font-size:17px}.ticket-option em{margin-left:5px;padding:3px 6px;border-radius:999px;color:#3b6a5e;background:var(--pine-soft);font-size:10px;font-style:normal}.info-card{display:grid;gap:1px;overflow:hidden;border-radius:14px;background:var(--line)}.info-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px;background:#fff;font-size:13px}.info-row span{color:var(--muted);font-size:12px}.notice-list{display:grid;gap:10px;margin:0;padding:0;color:var(--muted);font-size:12px;line-height:1.65;list-style:none}.notice-list li{position:relative;padding-left:15px}.notice-list li:before{position:absolute;top:9px;left:0;width:5px;height:5px;border-radius:50%;content:"";background:var(--gold)}
+    .bottom-bar{position:fixed;z-index:10;right:auto;bottom:max(12px,env(safe-area-inset-bottom));left:50%;display:flex;align-items:center;gap:12px;width:min(calc(100% - 24px),428px);margin:0;padding:10px 10px 10px 18px;border:1px solid #e7efeb;border-radius:30px;background:rgba(255,255,255,.98);box-shadow:0 10px 30px rgba(23,62,58,.18);backdrop-filter:blur(16px);transform:translateX(-50%)}.bottom-price{flex:1}.bottom-price>span,.bottom-price>strong{display:block}.bottom-price>span{color:var(--muted);font-size:12px}.bottom-price strong{margin-top:3px;color:var(--ink);font-family:var(--font-number);font-size:30px;font-weight:700;line-height:1}.bottom-price strong>span,.bottom-price strong>small{display:inline}.bottom-price small{margin-left:2px;font-family:var(--font-sans);font-size:11px}.primary{min-height:48px;border:0;border-radius:999px;padding:0 25px;color:#fff;background:var(--pine);font-size:15px;font-weight:600}.bottom-bar .primary{display:flex;align-items:center;justify-content:center;flex:0 0 52%;height:56px;gap:12px;padding:0;background:#21b596;font-size:16px}.button-arrow{font-family:var(--font-number);font-size:24px;line-height:1}.backdrop{position:fixed;z-index:20;inset:0;display:none;align-items:end;justify-content:center;background:rgba(23,62,58,.42)}.backdrop.show{display:flex}.sheet{width:min(100%,460px);max-height:88dvh;overflow:auto;padding:20px;padding-bottom:calc(20px + env(safe-area-inset-bottom));border-radius:22px 22px 0 0;background:var(--mist)}.sheet-heading,.selected-summary{display:flex;align-items:center;justify-content:space-between;gap:12px}.sheet-heading h2{margin:0;font-size:21px;font-weight:500}.sheet-heading p{margin:5px 0 0;color:var(--muted);font-size:12px}.close{border:0;color:var(--muted);background:transparent;font-size:22px}.selected-summary{margin-top:18px;padding:13px 14px;border:1px solid #e2c5cc;border-radius:13px;background:var(--plum-soft)}.selected-summary span{color:var(--muted);font-size:12px}.selected-summary strong{color:var(--plum);font-family:var(--font-number);font-size:17px}.sheet label{display:block;margin:20px 0 9px;font-size:13px;font-weight:600}.date-grid,.time-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.time-grid{grid-template-columns:1fr 1fr}.date-grid button,.time-grid button{min-height:60px;border:1px solid var(--line);border-radius:11px;color:var(--muted);background:#fff;font-size:12px}.date-grid button.selected,.time-grid button.selected{border-color:var(--plum);color:var(--plum);background:var(--plum-soft)}.date-grid span,.date-grid strong{display:block}.date-grid span{font-size:11px}.date-grid strong{margin-top:4px;color:var(--ink);font-family:var(--font-number);font-size:16px}.quantity-row{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 13px;border:1px solid var(--line);border-radius:11px;background:#fff}.quantity-row>span{color:var(--muted);font-size:13px}.quantity-control{display:flex;align-items:center;gap:13px}.quantity-control button{display:grid;place-items:center;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;color:var(--ink);background:var(--mist);font-size:18px}.quantity-control strong{min-width:14px;text-align:center;font-family:var(--font-number);font-size:17px}.visitor-section{margin-top:22px}.visitor-section-heading,.visitor-card-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}.visitor-section-heading{margin-bottom:10px}.visitor-section-heading div{display:grid;gap:4px}.visitor-section-heading strong{font-size:15px}.visitor-section-heading span{color:var(--muted);font-size:11px}.visitor-section-heading em{margin:0;padding:5px 8px;border-radius:999px;color:var(--plum);background:var(--plum-soft);font-size:11px;font-style:normal}.visitor-card{margin-top:10px;padding:4px 14px 6px;border:1px solid var(--line);border-radius:14px;background:#fff}.visitor-card-heading{min-height:34px;border-bottom:1px solid #eef3f0}.visitor-card-heading strong{font-size:13px}.visitor-card-heading span{color:#3b6a5e;font-size:11px}.visitor-card label{display:flex;align-items:center;gap:12px;margin:0;padding:11px 0;border-bottom:1px solid #eef3f0;color:var(--muted);font-size:12px;font-weight:400}.visitor-card label:last-child{border-bottom:0}.visitor-card input{min-width:0;flex:1;padding:0;border:0;outline:0;color:var(--ink);background:transparent;font:inherit;font-size:13px}.visitor-card input::placeholder{color:#a0aaa6}.sheet-note{margin:14px 0;color:var(--muted);font-size:11px;line-height:1.6}.sheet>.primary{width:100%}@media(min-width:700px){.page{margin:24px auto;border-radius:22px}.bottom-bar{bottom:24px}.sheet{margin-bottom:16px;border-radius:22px}}
+  </style>
+  <style>
+    .visit-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 8px 0}.visit-fact{display:flex;align-items:center;min-width:0;gap:7px}.visit-fact-icon{display:grid;flex:0 0 42px;place-items:center;width:42px;height:42px;border-radius:50%;color:#314541;background:#f2f4f2;font-size:20px}.visit-fact-content{display:grid;min-width:0;gap:3px}.visit-fact-content strong,.visit-fact-content small{display:block;overflow:hidden;text-overflow:ellipsis}.visit-fact-content strong{color:var(--ink);font-size:12px;font-weight:600;line-height:1.25}.visit-fact-content small{color:var(--muted);font-size:10px;line-height:1.3;white-space:nowrap}
+    .ticket-tags{display:flex!important;flex-wrap:wrap;gap:5px;margin-top:6px}.ticket-tags em{margin-left:0!important}.ticket-info{min-width:0}.ticket-purchase{display:grid;justify-items:end;gap:9px;margin-left:10px}.ticket-purchase b{font-family:var(--font-number)}.ticket-purchase .quantity-control{gap:8px}.ticket-selection-tip{margin-top:14px;color:var(--muted);font-size:11px;line-height:1.6}.order-summary{display:grid;gap:1px;margin-top:16px;overflow:hidden;border-radius:13px;background:var(--line)}.order-summary>div{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;background:#fff;color:var(--muted);font-size:13px}.order-summary strong{color:var(--ink);font-family:var(--font-number)}.order-summary .order-total{color:var(--ink);font-weight:600}.order-summary .order-total strong{color:var(--plum);font-size:18px}
+  </style>
+  <style>
+    .page.is-hidden,.bottom-bar.is-hidden{display:none}.toast{position:fixed;z-index:4000;right:24px;bottom:calc(104px + env(safe-area-inset-bottom));left:24px;display:none;width:fit-content;max-width:calc(100% - 48px);margin:0 auto;padding:11px 16px;border-radius:999px;color:#fff;background:rgba(31,46,43,.92);box-shadow:0 8px 24px rgba(23,62,58,.2);font-size:13px;line-height:1.4;text-align:center;pointer-events:none}.payment-page{position:fixed;z-index:3000;inset:0;display:none;overflow:auto;padding:calc(16px + env(safe-area-inset-top)) 20px calc(24px + env(safe-area-inset-bottom));color:#1f2e2b;background:#f2f6f2}.payment-page.show{display:block}.payment-page-header{display:grid;grid-template-columns:40px 1fr 40px;align-items:center;min-height:44px;text-align:center}.payment-page-header button{display:grid;place-items:center;width:40px;height:40px;border:0;border-radius:50%;color:#1f2e2b;background:transparent;font-size:22px}.payment-page-header strong{font-size:17px}.payment-result{display:grid;justify-items:center;padding:42px 0 30px;text-align:center}.payment-mark{display:grid;place-items:center;width:72px;height:72px;border-radius:50%;color:#fff;background:#21b596;font-size:38px;font-weight:600}.payment-result h1{margin:18px 0 7px;font-size:25px;font-weight:600}.payment-result p{margin:0;color:#687773;font-size:13px}.payment-card{display:grid;gap:1px;overflow:hidden;border-radius:16px;background:#dce8e1}.payment-card>div{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px;padding:0 16px;background:#fff;font-size:13px}.payment-card span{color:#687773}.payment-card strong{max-width:68%;overflow:hidden;color:#1f2e2b;font-size:13px;text-align:right;text-overflow:ellipsis;white-space:nowrap}.payment-card .payment-amount{min-height:72px}.payment-card .payment-amount strong{color:#c4576d;font-family:var(--font-number);font-size:24px}.payment-actions{display:grid;gap:12px;margin-top:28px}.payment-actions .primary{width:100%;background:#173e3a}.payment-secondary{min-height:44px;border:0;color:#687773;background:transparent;font-size:14px}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero"><div class="hero-actions"><button type="button" data-action="back">‹</button><button type="button" data-action="share" aria-label="分享">↗</button></div><div class="hero-content"><p>⌖ 贵州 · 六盘水 · 梅花山景区</p><h1>梅花山景区门票</h1><span>六盘水梅花山拥有高山森林、云海和清凉气候，游客可按所选日期进入景区，体验山地自然风光与度假休闲时光。</span></div></section>
+    <section class="visit-facts" aria-label="游客实用信息"><div class="visit-fact"><span class="visit-fact-icon">◷</span><span class="visit-fact-content"><strong>08:30–17:30</strong><small>开放时间</small></span></div><div class="visit-fact"><span class="visit-fact-icon">⌁</span><span class="visit-fact-content"><strong>3–5小时</strong><small>建议游玩</small></span></div><div class="visit-fact"><span class="visit-fact-icon">⌖</span><span class="visit-fact-content"><strong>六盘水市水城区</strong><small>景区地址</small></span></div></section>
+    <nav class="tabs" aria-label="门票信息分类"><button class="tab active" type="button" data-tab="ticket">票型价格</button><button class="tab" type="button" data-tab="notice">购票须知</button></nav>
+    <section class="panel active" data-panel="ticket"><div class="heading"><h2>选择票型</h2><span>可同时购买多种票型</span></div><div class="ticket-list"><div class="ticket-option" data-ticket="成人票" data-price="80"><div class="ticket-info"><strong>成人票</strong><small>适用于 18–59 周岁游客</small><span class="ticket-tags"><em>库存充足</em><em>电子票</em><em>实名入园</em><em>含游客意外险</em></span></div><div class="ticket-purchase"><b>¥80</b><div class="quantity-control"><button type="button" data-ticket-action="decrease" aria-label="减少成人票">−</button><strong data-quantity="成人票">1</strong><button type="button" data-ticket-action="increase" aria-label="增加成人票">＋</button></div></div></div><div class="ticket-option" data-ticket="儿童票" data-price="40"><div class="ticket-info"><strong>儿童票</strong><small>适用于 6–17 周岁游客</small><span class="ticket-tags"><em>库存充足</em><em>电子票</em><em>不含保险</em></span></div><div class="ticket-purchase"><b>¥40</b><div class="quantity-control"><button type="button" data-ticket-action="decrease" aria-label="减少儿童票">−</button><strong data-quantity="儿童票">0</strong><button type="button" data-ticket-action="increase" aria-label="增加儿童票">＋</button></div></div></div><div class="ticket-option" data-ticket="学生票" data-price="60"><div class="ticket-info"><strong>学生票</strong><small>凭有效学生证件入园</small><span class="ticket-tags"><em>库存充足</em><em>电子票</em><em>不含保险</em></span></div><div class="ticket-purchase"><b>¥60</b><div class="quantity-control"><button type="button" data-ticket-action="decrease" aria-label="减少学生票">−</button><strong data-quantity="学生票">0</strong><button type="button" data-ticket-action="increase" aria-label="增加学生票">＋</button></div></div></div></div><div class="ticket-selection-tip">点击“立即预订”后，再选择游玩日期、入园时段并填写游客信息。</div></section>
+    <section class="panel" data-panel="notice"><div class="heading"><h2>购票须知</h2><span>下单前阅读</span></div><div class="info-card"><div class="info-row"><strong>核验方式</strong><span>实名核验</span></div><div class="info-row"><strong>实名制</strong><span>需要填写游客信息</span></div><div class="info-row"><strong>有效期</strong><span>所选日期当天有效</span></div></div></section>
+  </main>
+  <div class="bottom-bar"><div class="bottom-price"><span id="selectedLabel">共1张门票</span><strong>¥<span id="totalPrice">80</span></strong></div><button class="primary" type="button" data-action="open-sheet"><span>立即预订</span><span class="button-arrow">→</span></button></div>
+  <div class="backdrop" id="bookingSheet"><section class="sheet"><div class="sheet-heading"><div><h2>填写预订信息</h2><p>已选<span id="sheetQuantity">1</span>张门票</p></div><button class="close" type="button" data-action="close-sheet">×</button></div><div class="order-summary" id="orderSummary"><div class="order-total"><span>订单金额</span><strong>¥<span id="sheetPrice">80</span></strong></div></div><label>游玩日期</label><div class="date-grid"><button class="selected" type="button">今天<strong>06/28</strong></button><button type="button">明天<strong>06/29</strong></button><button type="button">周日<strong>06/30</strong></button><button type="button">周一<strong>07/01</strong></button></div><label>入园时段</label><div class="time-grid"><button class="selected" type="button">08:30–12:00</button><button type="button">12:00–17:30</button></div><section class="visitor-section contact-section"><div class="visitor-section-heading"><div><strong>联系人信息</strong><span>用于接收订单与出票通知</span></div><em>必填</em></div><div class="visitor-card contact-card"><label>姓名<input id="contactName" type="text" placeholder="请输入联系人姓名" autocomplete="name" /></label><label>手机号<input id="contactPhone" type="tel" maxlength="11" placeholder="请输入联系人手机号" autocomplete="tel" /></label></div></section><section class="visitor-section" id="visitorSection"><div class="visitor-section-heading"><div><strong>游客信息</strong><span id="visitorCount">需要填写1位游客</span></div><em>实名制</em></div><div id="visitorCards"></div></section><p class="sheet-note">游客手机号为选填项；联系人手机号用于接收订单与出票通知。</p><button class="primary" type="button" data-action="submit-order">提交订单 · ¥<span id="submitPrice">80</span></button></section></div><div class="toast" id="toast"></div>
+  <section class="payment-page" id="paymentPage"><div class="payment-page-header"><button type="button" data-action="payment-back" aria-label="返回">‹</button><strong>支付结果</strong><span></span></div><div class="payment-result"><div class="payment-mark">✓</div><h1>支付成功</h1><p>订单已提交，正在为你出票</p></div><div class="payment-card"><div class="payment-amount"><span>实付金额</span><strong>¥<span id="paymentAmount">80</span></strong></div><div><span>支付方式</span><strong>微信支付</strong></div><div><span>订单编号</span><strong id="paymentOrderNo">--</strong></div><div><span>游玩日期</span><strong id="paymentDate">今天 06/28</strong></div><div><span>已购票型</span><strong id="paymentTickets">成人票 × 1</strong></div></div><div class="payment-actions"><button class="primary" type="button" data-action="payment-order">查看订单</button><button class="payment-secondary" type="button" data-action="payment-home">返回景区</button></div></section>
+  <script>
+    const bookingSheet = document.getElementById('bookingSheet')
+    const toast = document.getElementById('toast')
+    const totalPrice = document.getElementById('totalPrice')
+    const selectedLabel = document.getElementById('selectedLabel')
+    const sheetQuantity = document.getElementById('sheetQuantity')
+    const sheetPrice = document.getElementById('sheetPrice')
+    const submitPrice = document.getElementById('submitPrice')
+    const orderSummary = document.getElementById('orderSummary')
+    const contactNameInput = document.getElementById('contactName')
+    const contactPhoneInput = document.getElementById('contactPhone')
+    const visitorCount = document.getElementById('visitorCount')
+    const visitorCards = document.getElementById('visitorCards')
+    const page = document.querySelector('.page')
+    const bottomBar = document.querySelector('.bottom-bar')
+    const paymentPage = document.getElementById('paymentPage')
+    const paymentAmount = document.getElementById('paymentAmount')
+    const paymentOrderNo = document.getElementById('paymentOrderNo')
+    const paymentDate = document.getElementById('paymentDate')
+    const paymentTickets = document.getElementById('paymentTickets')
+    const ticketList = [
+      { name: '成人票', price: 80, quantity: 1 },
+      { name: '儿童票', price: 40, quantity: 0 },
+      { name: '学生票', price: 60, quantity: 0 }
+    ]
+    const orderLocation = { longitude: 104.82, latitude: 26.59 }
+    let contactName = ''
+    let contactPhone = ''
+    let visitorList = []
+
+    function showToast(message) {
+      toast.textContent = message
+      toast.style.display = 'block'
+      setTimeout(() => { toast.style.display = 'none' }, 2100)
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]))
+    }
+
+    function selectedTickets() {
+      return ticketList.filter(ticket => ticket.quantity > 0)
+    }
+
+    function totalQuantity() {
+      return selectedTickets().reduce((total, ticket) => total + ticket.quantity, 0)
+    }
+
+    function totalAmount() {
+      return selectedTickets().reduce((total, ticket) => total + ticket.price * ticket.quantity, 0)
+    }
+
+    function renderVisitors() {
+      const count = totalQuantity()
+      visitorCount.textContent = `需要填写${count}位游客`
+      visitorCards.innerHTML = visitorList.map((visitor, index) => `<div class="visitor-card"><div class="visitor-card-heading"><strong>游客 ${index + 1}</strong><span>${visitor.ticketName}</span></div><label>姓名<input data-visitor-field="name" data-visitor-index="${index}" type="text" placeholder="请输入真实姓名" autocomplete="name" value="${escapeHtml(visitor.name)}" /></label><label>证件类型<input type="text" value="身份证" readonly /></label><label>身份证号<input data-visitor-field="idNumber" data-visitor-index="${index}" type="text" maxlength="18" placeholder="请输入18位身份证号" autocomplete="off" value="${escapeHtml(visitor.idNumber)}" /></label><label>手机号<input data-visitor-field="phone" data-visitor-index="${index}" type="tel" maxlength="11" placeholder="选填，游客手机号" autocomplete="tel" value="${escapeHtml(visitor.phone)}" /></label></div>`).join('')
+    }
+
+    function syncVisitors() {
+      const currentVisitors = visitorList
+      const nextVisitors = []
+      selectedTickets().forEach(ticket => {
+        for (let index = 0; index < ticket.quantity; index += 1) {
+          const visitor = currentVisitors[nextVisitors.length] || { name: '', cardTypeId: 'ID', idNumber: '', phone: '' }
+          visitor.cardTypeId = 'ID'
+          visitor.ticketName = ticket.name
+          nextVisitors.push(visitor)
+        }
+      })
+      visitorList = nextVisitors
+      renderVisitors()
+    }
+
+    function updateTicketView() {
+      const amount = totalAmount()
+      const count = totalQuantity()
+      document.querySelectorAll('.ticket-option').forEach(option => {
+        const ticket = ticketList.find(item => item.name === option.dataset.ticket)
+        option.querySelector(`[data-quantity="${ticket.name}"]`).textContent = ticket.quantity
+      })
+      totalPrice.textContent = amount
+      selectedLabel.textContent = `共${count}张门票`
+      sheetQuantity.textContent = count
+      sheetPrice.textContent = amount
+      submitPrice.textContent = amount
+    }
+
+    function renderOrderSummary() {
+      const rows = selectedTickets().map(ticket => `<div><span>${ticket.name} × ${ticket.quantity}</span><strong>¥${ticket.price * ticket.quantity}</strong></div>`).join('')
+      orderSummary.innerHTML = `${rows}<div class="order-total"><span>订单金额</span><strong>¥${totalAmount()}</strong></div>`
+    }
+
+    function showPaymentPage() {
+      paymentAmount.textContent = totalAmount()
+      paymentOrderNo.textContent = `MH${Date.now()}`
+      paymentDate.textContent = document.querySelector('.date-grid button.selected').innerText.replace(/\s+/g, ' ')
+      paymentTickets.textContent = selectedTickets().map(ticket => `${ticket.name} × ${ticket.quantity}`).join('、')
+      page.classList.add('is-hidden')
+      bottomBar.classList.add('is-hidden')
+      paymentPage.classList.add('show')
+    }
+
+    function closePaymentPage() {
+      paymentPage.classList.remove('show')
+      page.classList.remove('is-hidden')
+      bottomBar.classList.remove('is-hidden')
+    }
+
+    function activateTab(tabName) {
+      document.querySelectorAll('.tab').forEach(item => item.classList.toggle('active', item.dataset.tab === tabName))
+      document.querySelectorAll('.panel').forEach(item => item.classList.toggle('active', item.dataset.panel === tabName))
+    }
+
+    document.addEventListener('click', event => {
+      const target = event.target.closest('[data-action]')
+      const tab = event.target.closest('[data-tab]')
+      const ticketAction = event.target.closest('[data-ticket-action]')
+
+      if (tab) activateTab(tab.dataset.tab)
+
+      if (ticketAction) {
+        const option = ticketAction.closest('.ticket-option')
+        const ticket = ticketList.find(item => item.name === option.dataset.ticket)
+        ticket.quantity = ticketAction.dataset.ticketAction === 'increase' ? Math.min(8, ticket.quantity + 1) : Math.max(0, ticket.quantity - 1)
+        updateTicketView()
+        syncVisitors()
+      }
+
+      if (!target) return
+      const action = target.dataset.action
+
+      if (action === 'open-sheet') {
+        if (!totalQuantity()) {
+          activateTab('ticket')
+          showToast('请先选择票型和数量')
+          return
+        }
+        renderOrderSummary()
+        syncVisitors()
+        bookingSheet.classList.add('show')
+      }
+      if (action === 'close-sheet') bookingSheet.classList.remove('show')
+      if (action === 'back') showToast('返回景区首页')
+      if (action === 'share') showToast('已打开分享面板')
+      if (action === 'payment-back' || action === 'payment-home') closePaymentPage()
+      if (action === 'payment-order') showToast('订单详情待接入')
+      if (action === 'submit-order') {
+        if (!contactName.trim() || !contactPhone.trim()) {
+          showToast('请填写联系人姓名和手机号')
+          return
+        }
+        const hasInvalidVisitor = visitorList.some(visitor => !visitor.name.trim() || !/^\d{17}[\dXx]$/.test(visitor.idNumber.trim()))
+        if (hasInvalidVisitor) {
+          showToast('请填写完整且正确的游客信息')
+          return
+        }
+        bookingSheet.classList.remove('show')
+        showPaymentPage()
+      }
+    })
+
+    visitorCards.addEventListener('input', event => {
+      const input = event.target.closest('[data-visitor-field]')
+      if (!input) return
+      const index = Number(input.dataset.visitorIndex)
+      visitorList[index][input.dataset.visitorField] = input.value
+    })
+
+    contactNameInput.addEventListener('input', event => {
+      contactName = event.target.value
+    })
+
+    contactPhoneInput.addEventListener('input', event => {
+      contactPhone = event.target.value
+    })
+
+    document.querySelectorAll('.date-grid button,.time-grid button').forEach(option => option.addEventListener('click', () => {
+      option.parentElement.querySelectorAll('button').forEach(item => item.classList.remove('selected'))
+      option.classList.add('selected')
+    }))
+
+    bookingSheet.addEventListener('click', event => {
+      if (event.target === bookingSheet) bookingSheet.classList.remove('show')
+    })
+
+    updateTicketView()
+    syncVisitors()
+  </script>
+</body>
+</html>
