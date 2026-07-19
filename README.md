@@ -24,6 +24,10 @@ npm run preview
 src/main.js                         Vue 应用入口与 Vant 注册
 src/App.vue                         应用根组件
 src/components/Page.vue             页面容器组件
+src/config/env.js                   API 和微信运行配置
+src/services/request.js             通用请求封装
+src/services/mallApi.js             黔云联创商城接口封装
+src/services/wechatPay.js           微信小程序支付调用入口
 门票商品详情页.vue                   门票详情页主体源码
 门票商品详情页.html                  无工程依赖的静态预览
 门票商品详情页接口字段映射.md         B 公司接口字段映射与支付流程
@@ -39,3 +43,7 @@ createOrder → wechatPayment → wx.requestPayment → getOrderByNo → 支付/
 ```
 
 正式小程序需要由后端返回真实订单号、支付参数和订单状态，不能使用页面内的临时订单号或模拟支付结果。
+
+## 接口配置
+
+复制 `.env.example` 为 `.env.local`，填写黔云联创接口地址、资源 ID、微信 AppID。未填写接口配置时，页面使用静态预览数据；填写后会调用真实商品、创建订单、微信支付和订单查询接口。

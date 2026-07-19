@@ -80,15 +80,15 @@
           </div>
         </section>
         <p class="sheet-note">实名信息仅用于本次入园核验，支付成功后可在订单详情查看核销码。</p>
-        <van-button type="primary" color="#21b596" block round @click="createOrder">提交订单 · ¥{{ totalPrice }}</van-button>
+        <van-button type="primary" color="#21b596" block round :loading="state.loading" @click="createOrder">提交订单 · ¥{{ totalPrice }}</van-button>
       </div>
     </van-popup>
 
     <section v-if="state.paymentPageVisible" class="payment-page">
       <div class="payment-page-header"><button type="button" aria-label="返回" @click="closePayment"><van-icon name="arrow-left" size="22" /></button><strong>支付结果</strong><span></span></div>
-      <div class="payment-result"><div class="payment-mark">✓</div><h1>支付成功</h1><p>订单已提交，正在为你出票</p></div>
-      <div class="payment-card"><div class="payment-amount"><span>实付金额</span><strong>¥{{ totalPrice }}</strong></div><div><span>支付方式</span><strong>微信支付</strong></div><div><span>订单编号</span><strong>{{ state.orderNo }}</strong></div><div><span>游玩日期</span><strong>{{ selectedDateLabel }}</strong></div><div><span>已购票型</span><strong>{{ selectedTicketSummary }}</strong></div></div>
-      <div class="payment-actions"><van-button type="primary" color="#173e3a" block round @click="viewOrder">查看订单</van-button><button type="button" class="payment-secondary" @click="closePayment">返回景区</button></div>
+      <div class="payment-result"><div class="payment-mark" :class="`is-${state.paymentStatus}`">{{ state.paymentStatus === 'success' ? '✓' : '…' }}</div><h1>{{ paymentTitle }}</h1><p>{{ paymentDescription }}</p></div>
+      <div class="payment-card"><div class="payment-amount"><span>实付金额</span><strong>¥{{ paymentAmount }}</strong></div><div><span>支付方式</span><strong>微信支付</strong></div><div><span>订单编号</span><strong>{{ state.orderNo || '订单创建中' }}</strong></div><div><span>订单状态</span><strong>{{ state.orderStatusLabel }}</strong></div><div><span>游玩日期</span><strong>{{ selectedDateLabel }}</strong></div><div><span>已购票型</span><strong>{{ selectedTicketSummary }}</strong></div></div>
+      <div class="payment-actions"><van-button v-if="state.paymentStatus === 'success'" type="primary" color="#173e3a" block round @click="viewOrder">查看订单</van-button><van-button v-else-if="state.paymentStatus === 'failed'" type="primary" color="#173e3a" block round @click="retryPayment">重新填写</van-button><button type="button" class="payment-secondary" @click="closePayment">返回景区</button></div>
     </section>
   </Page>
 </template>
@@ -98,13 +98,22 @@
 import { computed, onMounted, reactive, watch } from 'vue'
 import { showToast } from 'vant'
 import Page from '@/components/Page.vue'
+import { isMallApiConfigured, runtimeConfig } from '@/config/env'
+import { mallApi } from '@/services/mallApi'
+import { requestWechatPayment } from '@/services/wechatPay'
 
 /*------------------------------------------------变量----------------------------------------------------*/
 const state = reactive({
   activeTab: 'ticket',
   bookingVisible: false,
   paymentPageVisible: false,
+  loading: false,
   orderNo: '',
+  orderId: '',
+  orderStatus: '',
+  orderStatusLabel: '订单处理中',
+  paymentStatus: 'paying',
+  paymentAmount: 0,
   heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=82',
   checkType: '实名核验',
   hasRealName: true,
@@ -141,13 +150,77 @@ const selectedDateLabel = computed(() => {
   return dateItem ? `${dateItem.label} ${dateItem.date}` : state.selectedDate
 })
 const selectedTicketSummary = computed(() => selectedTickets.value.map(ticket => `${ticket.name} × ${ticket.quantity}`).join('、'))
+const paymentAmount = computed(() => state.paymentAmount || totalPrice.value)
+const paymentTitle = computed(() => ({
+  paying: '支付处理中',
+  success: '支付成功',
+  failed: '支付失败'
+}[state.paymentStatus] || '订单处理中'))
+const paymentDescription = computed(() => ({
+  paying: '正在提交订单并确认微信支付结果，请稍候',
+  success: '订单已支付，正在为你出票',
+  failed: '订单未完成支付，请检查订单状态后重试'
+}[state.paymentStatus] || '正在确认订单状态'))
 
 const createVisitor = ticketName => ({ name: '', cardTypeId: 'ID', idNumber: '', phone: '', ticketName })
 
 /*----------------------------------------------事件函数--------------------------------------------------*/
-/** 获取数据 */
-const getData = () => {
+/* 接口返回可能包裹 data，这里统一拆包，避免页面到处判断返回结构。 */
+const unwrapData = response => response?.data ?? response ?? {}
+
+/* 将接口票型字段转换为页面字段，真实字段差异只需要在这里调整。 */
+const normalizeTicket = (source, index) => {
+  const ticket = source || {}
+  const tags = ticket.tags || ticket.labels || []
+  const tagList = Array.isArray(tags) ? tags.map(tag => typeof tag === 'string' ? tag : tag.name).filter(Boolean) : []
+  const hasInsurance = ticket.hasInsurance ?? ticket.insurance ?? false
+  return {
+    id: ticket.id || ticket.resourcesSkuId || `ticket-${index}`,
+    resourcesId: ticket.resourcesId || ticket.resourceId || runtimeConfig.resourcesId,
+    resourcesSkuId: ticket.resourcesSkuId || ticket.id || `ticket-${index}`,
+    name: ticket.skuName || ticket.name || '门票',
+    price: Number(ticket.price ?? ticket.salePrice ?? 0),
+    quantity: 0,
+    description: ticket.ageString || ticket.description || '请以票型适用规则为准',
+    available: !(ticket.isStopSell || ticket.stockStatus === 'SOLD_OUT'),
+    stockLabel: ticket.stockLabel || (ticket.stockStatus === 'SOLD_OUT' ? '已售罄' : '库存充足'),
+    tags: [...tagList, hasInsurance ? '含保险' : '不含保险']
+  }
+}
+
+/* 将景区和资源详情接口结果映射到当前页面。 */
+const applyResourceData = (merchantResponse, resourceResponse) => {
+  const merchant = unwrapData(merchantResponse)
+  const resource = unwrapData(resourceResponse)
+  state.heroImage = resource.image || resource.images?.[0] || merchant.image || state.heroImage
+  state.scenicIntro = resource.intro || resource.imageTextIntro || merchant.intro || state.scenicIntro
+  state.scenicAddress = merchant.address || state.scenicAddress
+  state.openingHours = merchant.shopHours || state.openingHours
+  state.checkType = resource.checkType || state.checkType
+  state.hasRealName = resource.hasRealName ?? state.hasRealName
+  state.validityPeriod = resource.validityPeriod || state.validityPeriod
+
+  const sourceTickets = resource.resourcesSkuList || resource.skuList || resource.data || []
+  if (sourceTickets.length) {
+    state.ticketList.splice(0, state.ticketList.length, ...sourceTickets.map(normalizeTicket))
+    state.ticketList[0].quantity = 1
+  }
+}
+
+/* 获取景区和票型数据；没有配置接口时保留静态预览数据。 */
+const getData = async () => {
   state.activeTab = 'ticket'
+  if (!isMallApiConfigured()) return
+
+  try {
+    const [merchant, resource] = await Promise.all([
+      mallApi.getMerchant({ merchantId: runtimeConfig.merchantId }),
+      mallApi.getResourcesMoreInfo({ resourcesId: runtimeConfig.resourcesId })
+    ])
+    applyResourceData(merchant, resource)
+  } catch (error) {
+    showToast(error.message || '景区数据加载失败，当前使用预览数据')
+  }
 }
 
 /** 切换信息分类 */
@@ -196,8 +269,60 @@ const closeBooking = () => {
   state.bookingVisible = false
 }
 
-/** 提交订单 */
-const createOrder = () => {
+/* 取得微信用户身份；正式小程序应在登录流程中写入 openid。 */
+const getWechatOpenid = () => {
+  if (globalThis.wx?.getStorageSync) return globalThis.wx.getStorageSync('openid') || ''
+  return runtimeConfig.openid
+}
+
+/* 组装创建订单请求，页面 quantity 在接口中必须转换为 details[].number。 */
+const buildOrderPayload = () => ({
+  contactName: state.contactName.trim(),
+  contactTel: state.contactPhone.trim(),
+  longitude: state.orderLocation.longitude,
+  latitude: state.orderLocation.latitude,
+  details: selectedTickets.value.map(ticket => ({
+    resourcesId: ticket.resourcesId || runtimeConfig.resourcesId,
+    resourcesSkuId: ticket.resourcesSkuId || ticket.id,
+    number: ticket.quantity,
+    playDate: state.selectedDate,
+    ...(state.selectedTime ? { stockTime: state.selectedTime } : {}),
+    ...(state.hasRealName ? {
+      travellers: state.visitorList
+        .filter(visitor => visitor.ticketName === ticket.name)
+        .map(visitor => ({
+          name: visitor.name.trim(),
+          idCard: visitor.idNumber.trim(),
+          phone: visitor.phone.trim(),
+          cardTypeId: 'ID'
+        }))
+    } : {})
+  }))
+})
+
+/* 将 B 公司订单状态归一化为页面状态；具体枚举值待黔云联创确认后集中替换。 */
+const resolveOrderStatus = order => {
+  const status = String(order?.orderStatus || '').toUpperCase()
+  if (['ISSUED', '出票成功', '已出票'].some(value => status.includes(value))) return 'issued'
+  if (['PAID', 'PAY_SUCCESS', '支付成功', '已支付', '出票中'].some(value => status.includes(value))) return 'success'
+  if (['FAIL', 'FAILED', '支付失败', 'PAY_FAIL'].some(value => status.includes(value))) return 'failed'
+  if (['CANCEL', 'CLOSED', '已取消', '已关闭'].some(value => status.includes(value))) return 'failed'
+  return 'paying'
+}
+
+/* 支付后重新查询订单，避免把 wx.requestPayment 成功误判成出票成功。 */
+const refreshOrderStatus = async () => {
+  const order = unwrapData(await mallApi.getOrderByNo(state.orderNo))
+  state.orderStatus = order.orderStatus || ''
+  const normalizedStatus = resolveOrderStatus(order)
+  state.paymentStatus = normalizedStatus === 'failed' ? 'failed' : normalizedStatus === 'paying' ? 'paying' : 'success'
+  state.orderStatusLabel = normalizedStatus === 'issued' ? '支付成功，已出票' : normalizedStatus === 'success' ? '支付成功，出票中' : normalizedStatus === 'failed' ? '支付失败' : '订单状态确认中'
+  state.paymentAmount = Number(order.payAmount ?? order.totalAmount ?? state.paymentAmount)
+  return order
+}
+
+/** 提交订单并调用微信支付 */
+const createOrder = async () => {
   if (!state.contactName.trim() || !state.contactPhone.trim()) {
     showToast('请填写联系人姓名和手机号')
     return
@@ -214,8 +339,48 @@ const createOrder = () => {
   }
 
   closeBooking()
-  state.orderNo = `MH${Date.now()}`
+  state.loading = true
+  state.paymentStatus = 'paying'
+  state.orderStatusLabel = '订单创建中'
+  state.paymentAmount = totalPrice.value
   state.paymentPageVisible = true
+
+  if (!isMallApiConfigured()) {
+    state.orderNo = `MH${Date.now()}`
+    state.orderStatusLabel = '支付成功，出票中（演示）'
+    state.paymentStatus = 'success'
+    state.loading = false
+    return
+  }
+
+  try {
+    const order = unwrapData(await mallApi.createOrder(buildOrderPayload()))
+    state.orderNo = order.orderNo || order.mchOrderNo || ''
+    state.orderId = order.orderId || ''
+    state.paymentAmount = Number(order.payAmount ?? order.totalAmount ?? totalPrice.value)
+
+    if (!state.orderNo) throw new Error('创建订单未返回订单号')
+    if (Number(state.paymentAmount) === 0 || order.paySuccess === true) {
+      await refreshOrderStatus()
+      return
+    }
+
+    const openid = getWechatOpenid()
+    if (!openid || !runtimeConfig.appId) throw new Error('缺少微信登录信息，请先完成小程序登录')
+    const payment = unwrapData(await mallApi.wechatPayment({
+      mchOrderNo: state.orderNo,
+      openid,
+      appId: runtimeConfig.appId
+    }))
+    if (!payment.paySuccess) await requestWechatPayment(payment.payInfo)
+    await refreshOrderStatus()
+  } catch (error) {
+    state.paymentStatus = 'failed'
+    state.orderStatusLabel = '支付失败'
+    showToast(error.message || '订单提交失败，请稍后重试')
+  } finally {
+    state.loading = false
+  }
 }
 
 /** 返回景区首页 */
@@ -233,9 +398,25 @@ const closePayment = () => {
   state.paymentPageVisible = false
 }
 
+/** 支付失败后返回预订弹层，保留已经填写的信息。 */
+const retryPayment = () => {
+  state.paymentPageVisible = false
+  state.bookingVisible = true
+}
+
 /** 查看订单 */
-const viewOrder = () => {
-  showToast('订单详情待接入')
+const viewOrder = async () => {
+  if (!isMallApiConfigured()) {
+    showToast('订单详情接口待接入')
+    return
+  }
+
+  try {
+    await refreshOrderStatus()
+    showToast(`订单状态：${state.orderStatusLabel}`)
+  } catch (error) {
+    showToast(error.message || '订单查询失败')
+  }
 }
 
 /*----------------------------------------------生命周期--------------------------------------------------*/
@@ -980,6 +1161,14 @@ watch(() => state.ticketList.map(ticket => ticket.quantity), syncVisitors, { dee
       background: #21b596;
       font-size: 38px;
       font-weight: 600;
+
+      &.is-paying {
+        background: #cba15a;
+      }
+
+      &.is-failed {
+        background: #c4576d;
+      }
     }
 
     h1 {
