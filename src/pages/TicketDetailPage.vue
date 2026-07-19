@@ -70,7 +70,7 @@ import { requestWechatPayment } from '@/services/wechatPay'
 import BookingPopup from '@/components/ticket/BookingPopup.vue'
 import HeroSection from '@/components/ticket/HeroSection.vue'
 import NoticePanel from '@/components/ticket/NoticePanel.vue'
-import PaymentResultPage from '@/components/ticket/PaymentResultPage.vue'
+import PaymentResultPage from '@/pages/PaymentResultPage.vue'
 import TicketCatalog from '@/components/ticket/TicketCatalog.vue'
 import VisitFacts from '@/components/ticket/VisitFacts.vue'
 

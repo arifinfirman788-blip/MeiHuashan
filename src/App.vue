@@ -1,7 +1,7 @@
 <script setup>
-import TicketDetail from '../门票商品详情页.vue'
+import TicketDetailPage from './pages/TicketDetailPage.vue'
 </script>
 
 <template>
-  <TicketDetail />
+  <TicketDetailPage />
 </template>
