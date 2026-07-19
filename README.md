@@ -28,6 +28,7 @@ src/config/env.js                   API 和微信运行配置
 src/services/request.js             通用请求封装
 src/services/mallApi.js             黔云联创商城接口封装
 src/services/wechatPay.js           微信小程序支付调用入口
+src/components/ticket/              门票详情页拆分组件
 门票商品详情页.vue                   门票详情页主体源码
 门票商品详情页.html                  无工程依赖的静态预览
 门票商品详情页接口字段映射.md         B 公司接口字段映射与支付流程

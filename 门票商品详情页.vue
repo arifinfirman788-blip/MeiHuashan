@@ -1,49 +1,15 @@
 <template>
   <Page class="ticket-detail-box">
-    <!-- 商品主图 -->
-    <section class="hero-card">
-      <img class="hero-image" :src="state.heroImage" alt="梅花山景区山地风景" />
-      <div class="hero-mask"></div>
-      <div class="hero-actions">
-        <button type="button" aria-label="返回" @click="handleBack"><van-icon name="arrow-left" size="24" /></button>
-        <button type="button" aria-label="分享" @click="handleShare"><van-icon name="share-o" size="24" /></button>
-      </div>
-      <div class="hero-content">
-        <p>⌖ 贵州 · 六盘水 · 梅花山景区</p>
-        <h1>梅花山景区门票</h1>
-        <span>{{ state.scenicIntro }}</span>
-      </div>
-    </section>
-
-    <section class="visit-facts" aria-label="游客实用信息">
-      <div class="visit-fact"><span class="visit-fact-icon"><van-icon name="clock-o" size="20" /></span><span class="visit-fact-content"><strong>{{ state.openingHours }}</strong><small>开放时间</small></span></div>
-      <div class="visit-fact"><span class="visit-fact-icon"><van-icon name="guide-o" size="20" /></span><span class="visit-fact-content"><strong>{{ state.suggestedDuration }}</strong><small>建议游玩</small></span></div>
-      <div class="visit-fact"><span class="visit-fact-icon"><van-icon name="location-o" size="20" /></span><span class="visit-fact-content"><strong>{{ state.scenicAddress }}</strong><small>景区地址</small></span></div>
-    </section>
+    <HeroSection :hero-image="state.heroImage" :scenic-intro="state.scenicIntro" @back="handleBack" @share="handleShare" />
+    <VisitFacts :opening-hours="state.openingHours" :suggested-duration="state.suggestedDuration" :scenic-address="state.scenicAddress" />
 
     <!-- 信息分类 -->
     <van-tabs v-model:active="state.activeTab" type="card" class="detail-tabs" color="#173e3a" title-active-color="#173e3a" @change="handleTabChange">
       <van-tab title="票型价格" name="ticket">
-        <section class="tab-panel">
-          <div class="section-heading"><h2>选择票型</h2><span>价格与库存状态</span></div>
-          <div class="ticket-list">
-            <div v-for="ticket in state.ticketList" :key="ticket.id" class="ticket-option">
-              <div class="ticket-info"><strong>{{ ticket.name }}</strong><small>{{ ticket.description }}</small><span class="ticket-tags"><em>{{ ticket.available ? ticket.stockLabel : '暂不可售' }}</em><em v-for="tag in ticket.tags" :key="tag">{{ tag }}</em></span></div>
-              <div class="ticket-purchase"><b>¥{{ ticket.price }}</b><van-stepper v-model="ticket.quantity" :min="0" :max="8" theme="round" button-size="28px" :disabled="!ticket.available" /></div>
-            </div>
-          </div>
-          <div class="ticket-selection-tip">可同时购买多种票型，游玩日期、入园时段和游客信息将在点击“立即预订”后填写。</div>
-        </section>
+        <TicketCatalog :ticket-list="state.ticketList" @update-quantity="updateTicketQuantity" />
       </van-tab>
       <van-tab title="购票须知" name="notice">
-        <section class="tab-panel">
-          <div class="section-heading"><h2>购票须知</h2><span>下单前阅读</span></div>
-          <van-cell-group inset class="notice-card">
-            <van-cell title="核验方式" :value="state.checkType" />
-            <van-cell title="实名制" :value="state.hasRealName ? '需要填写游客信息' : '按数量核验'" />
-            <van-cell title="有效期" :value="state.validityPeriod" />
-          </van-cell-group>
-        </section>
+        <NoticePanel :check-type="state.checkType" :has-real-name="state.hasRealName" :validity-period="state.validityPeriod" />
       </van-tab>
     </van-tabs>
 
@@ -53,43 +19,43 @@
       <van-button type="primary" color="#21b596" round @click="openBooking"><span>立即预订</span><van-icon name="arrow" size="18" /></van-button>
     </div>
 
-    <!-- 预订信息弹层 -->
-    <van-popup v-model:show="state.bookingVisible" position="bottom" round :style="{ maxHeight: '88%' }">
-      <div class="booking-sheet">
-        <div class="sheet-heading"><div><h2>填写预订信息</h2><p>已选{{ totalQuantity }}张门票</p></div><van-icon name="cross" size="20" color="#687773" @click="closeBooking" /></div>
-        <div class="order-summary"><div v-for="ticket in selectedTickets" :key="ticket.id"><span>{{ ticket.name }} × {{ ticket.quantity }}</span><strong>¥{{ ticket.price * ticket.quantity }}</strong></div><div class="order-total"><span>订单金额</span><strong>¥{{ totalPrice }}</strong></div></div>
-        <label>游玩日期</label>
-        <div class="date-grid"><button v-for="date in state.dateList" :key="date.value" type="button" :class="{ selected: state.selectedDate === date.value }" @click="selectDate(date.value)"><span>{{ date.label }}</span><strong>{{ date.date }}</strong></button></div>
-        <label>入园时段</label>
-        <div class="time-grid"><button v-for="time in state.timeList" :key="time" type="button" :class="{ selected: state.selectedTime === time }" @click="selectTime(time)">{{ time }}</button></div>
-        <section class="visitor-section contact-section">
-          <div class="visitor-section-heading"><div><strong>联系人信息</strong><span>用于接收订单与出票通知</span></div><van-tag color="#f6e2e6" text-color="#c4576d" round>必填</van-tag></div>
-          <div class="visitor-card contact-card">
-            <van-field v-model="state.contactName" label="姓名" placeholder="请输入联系人姓名" clearable />
-            <van-field v-model="state.contactPhone" label="手机号" type="tel" placeholder="请输入联系人手机号" maxlength="11" clearable />
-          </div>
-        </section>
-        <section v-if="state.hasRealName" class="visitor-section">
-          <div class="visitor-section-heading"><div><strong>游客信息</strong><span>需要填写{{ totalQuantity }}位游客</span></div><van-tag color="#f6e2e6" text-color="#c4576d" round>实名制</van-tag></div>
-          <div v-for="(visitor, index) in state.visitorList" :key="index" class="visitor-card">
-            <div class="visitor-card-heading"><strong>游客 {{ index + 1 }}</strong><span>{{ visitor.ticketName }}</span></div>
-            <van-field v-model="visitor.name" label="姓名" placeholder="请输入真实姓名" clearable />
-            <van-field :model-value="'身份证'" label="证件类型" readonly />
-            <van-field v-model="visitor.idNumber" label="身份证号" placeholder="请输入18位身份证号" maxlength="18" clearable />
-            <van-field v-model="visitor.phone" label="手机号" type="tel" placeholder="选填，游客手机号" maxlength="11" clearable />
-          </div>
-        </section>
-        <p class="sheet-note">实名信息仅用于本次入园核验，支付成功后可在订单详情查看核销码。</p>
-        <van-button type="primary" color="#21b596" block round :loading="state.loading" @click="createOrder">提交订单 · ¥{{ totalPrice }}</van-button>
-      </div>
-    </van-popup>
+    <BookingPopup
+      :show="state.bookingVisible"
+      :total-quantity="totalQuantity"
+      :selected-tickets="selectedTickets"
+      :total-price="totalPrice"
+      :date-list="state.dateList"
+      :selected-date="state.selectedDate"
+      :time-list="state.timeList"
+      :selected-time="state.selectedTime"
+      :contact-name="state.contactName"
+      :contact-phone="state.contactPhone"
+      :has-real-name="state.hasRealName"
+      :visitor-list="state.visitorList"
+      :loading="state.loading"
+      @update:show="state.bookingVisible = $event"
+      @update:contact-name="state.contactName = $event"
+      @update:contact-phone="state.contactPhone = $event"
+      @select-date="selectDate"
+      @select-time="selectTime"
+      @update-visitor="updateVisitor"
+      @submit="createOrder"
+    />
 
-    <section v-if="state.paymentPageVisible" class="payment-page">
-      <div class="payment-page-header"><button type="button" aria-label="返回" @click="closePayment"><van-icon name="arrow-left" size="22" /></button><strong>支付结果</strong><span></span></div>
-      <div class="payment-result"><div class="payment-mark" :class="`is-${state.paymentStatus}`">{{ state.paymentStatus === 'success' ? '✓' : '…' }}</div><h1>{{ paymentTitle }}</h1><p>{{ paymentDescription }}</p></div>
-      <div class="payment-card"><div class="payment-amount"><span>实付金额</span><strong>¥{{ paymentAmount }}</strong></div><div><span>支付方式</span><strong>微信支付</strong></div><div><span>订单编号</span><strong>{{ state.orderNo || '订单创建中' }}</strong></div><div><span>订单状态</span><strong>{{ state.orderStatusLabel }}</strong></div><div><span>游玩日期</span><strong>{{ selectedDateLabel }}</strong></div><div><span>已购票型</span><strong>{{ selectedTicketSummary }}</strong></div></div>
-      <div class="payment-actions"><van-button v-if="state.paymentStatus === 'success'" type="primary" color="#173e3a" block round @click="viewOrder">查看订单</van-button><van-button v-else-if="state.paymentStatus === 'failed'" type="primary" color="#173e3a" block round @click="retryPayment">重新填写</van-button><button type="button" class="payment-secondary" @click="closePayment">返回景区</button></div>
-    </section>
+    <PaymentResultPage
+      v-if="state.paymentPageVisible"
+      :status="state.paymentStatus"
+      :amount="paymentAmount"
+      :order-no="state.orderNo"
+      :order-status-label="state.orderStatusLabel"
+      :date-label="selectedDateLabel"
+      :ticket-summary="selectedTicketSummary"
+      :title="paymentTitle"
+      :description="paymentDescription"
+      @close="closePayment"
+      @retry="retryPayment"
+      @view-order="viewOrder"
+    />
   </Page>
 </template>
 
@@ -101,6 +67,12 @@ import Page from '@/components/Page.vue'
 import { isMallApiConfigured, runtimeConfig } from '@/config/env'
 import { mallApi } from '@/services/mallApi'
 import { requestWechatPayment } from '@/services/wechatPay'
+import BookingPopup from '@/components/ticket/BookingPopup.vue'
+import HeroSection from '@/components/ticket/HeroSection.vue'
+import NoticePanel from '@/components/ticket/NoticePanel.vue'
+import PaymentResultPage from '@/components/ticket/PaymentResultPage.vue'
+import TicketCatalog from '@/components/ticket/TicketCatalog.vue'
+import VisitFacts from '@/components/ticket/VisitFacts.vue'
 
 /*------------------------------------------------变量----------------------------------------------------*/
 const state = reactive({
@@ -228,6 +200,12 @@ const handleTabChange = tabName => {
   state.activeTab = tabName
 }
 
+/** 更新票型购买数量 */
+const updateTicketQuantity = ({ id, quantity }) => {
+  const ticket = state.ticketList.find(item => item.id === id)
+  if (ticket) ticket.quantity = quantity
+}
+
 /** 选择日期 */
 const selectDate = date => {
   state.selectedDate = date
@@ -236,6 +214,11 @@ const selectDate = date => {
 /** 选择时段 */
 const selectTime = time => {
   state.selectedTime = time
+}
+
+/** 更新游客或联系人表单字段 */
+const updateVisitor = ({ index, field, value }) => {
+  if (state.visitorList[index]) state.visitorList[index][field] = value
 }
 
 /** 同步游客信息 */
@@ -427,7 +410,7 @@ onMounted(() => {
 watch(() => state.ticketList.map(ticket => ticket.quantity), syncVisitors, { deep: true })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .ticket-detail-box {
   min-height: 100vh;
   padding: 8px 8px 118px;
@@ -572,11 +555,11 @@ watch(() => state.ticketList.map(ticket => ticket.quantity), syncVisitors, { dee
   .detail-tabs {
     margin-top: 20px;
 
-    :deep(.van-tabs__wrap) {
+    .van-tabs__wrap {
       height: 52px;
     }
 
-    :deep(.van-tabs__nav--card) {
+    .van-tabs__nav--card {
       height: 48px;
       margin: 0 8px;
       padding: 0;
@@ -585,7 +568,7 @@ watch(() => state.ticketList.map(ticket => ticket.quantity), syncVisitors, { dee
       background: #f4f5f4;
     }
 
-    :deep(.van-tab) {
+    .van-tab {
       margin: 4px;
       border: 1px solid transparent;
       border-radius: 24px;
@@ -593,13 +576,13 @@ watch(() => state.ticketList.map(ticket => ticket.quantity), syncVisitors, { dee
       font-size: 14px;
     }
 
-    :deep(.van-tab--active) {
+    .van-tab--active {
       border-color: #1f2e2b;
       color: #1f2e2b;
       background: #ffffff;
     }
 
-    :deep(.van-tabs__line) {
+    .van-tabs__line {
       display: none;
     }
   }
@@ -758,7 +741,7 @@ watch(() => state.ticketList.map(ticket => ticket.quantity), syncVisitors, { dee
       font-family: var(--font-number);
     }
 
-    :deep(.van-stepper) {
+    .van-stepper {
       gap: 8px;
     }
   }
@@ -1087,22 +1070,22 @@ watch(() => state.ticketList.map(ticket => ticket.quantity), syncVisitors, { dee
     }
   }
 
-  :deep(.visitor-card .van-cell) {
+  .visitor-card .van-cell {
     padding: 12px 0;
     background: transparent;
   }
 
-  :deep(.visitor-card .van-cell:not(:last-child)::after) {
+  .visitor-card .van-cell:not(:last-child)::after {
     right: 0;
     left: 0;
   }
 
-  :deep(.visitor-card .van-field__label) {
+  .visitor-card .van-field__label {
     width: 62px;
     color: #687773;
   }
 
-  :deep(.visitor-card .van-field__control) {
+  .visitor-card .van-field__control {
     color: #1f2e2b;
     font-size: 13px;
   }
@@ -1251,7 +1234,7 @@ watch(() => state.ticketList.map(ticket => ticket.quantity), syncVisitors, { dee
     }
   }
 
-  :deep(.bottom-bar .van-button) {
+  .bottom-bar .van-button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1264,11 +1247,11 @@ watch(() => state.ticketList.map(ticket => ticket.quantity), syncVisitors, { dee
     font-weight: 600;
   }
 
-  :deep(.bottom-bar .van-button__content) {
+  .bottom-bar .van-button__content {
     gap: 12px;
   }
 
-  :deep(.bottom-bar .van-icon) {
+  .bottom-bar .van-icon {
     font-family: var(--font-number);
   }
 }
