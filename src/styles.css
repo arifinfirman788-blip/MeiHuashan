@@ -1,0 +1,43 @@
+:root {
+  font-family: "PingFang SC", "苹方-简", "PingFang TC", "苹方-繁", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  color: #1f2e2b;
+  background: #cfdad4;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: #cfdad4;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: #cfdad4;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(196, 87, 109, .28);
+  outline-offset: 3px;
+}
+
+#app {
+  min-height: 100vh;
+}
